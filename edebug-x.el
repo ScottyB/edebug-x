@@ -137,13 +137,19 @@ not already."
   "Remove highlights from the current line."
   (edebug-x-remove-highlight))
 
+(defun edebug-x-read-breakpoint-at-line ()
+  "Return a list of values read from the breakpoints buffer.
+Values are read from the line at point."
+  (-remove (lambda (str) (string= str ""))
+           (split-string (buffer-substring-no-properties
+                          (line-beginning-position)
+                          (line-end-position)) "  ")))
+
 (defun edebug-x-visit-breakpoint ()
   "Navigate to breakpoint at line."
   (interactive)
   (destructuring-bind (func-name pos &optional condition temporary)
-      (split-string (buffer-substring-no-properties
-                     (line-beginning-position)
-                     (line-end-position)))
+      (edebug-x-read-breakpoint-at-line)
     (find-function (intern func-name))
     (goto-char (string-to-number pos))))
 
@@ -157,14 +163,12 @@ not already."
   "Remove breakpoint at line."
   (interactive)
   (destructuring-bind (func-name pos &optional condition temporary)
-      (split-string (buffer-substring-no-properties
-                     (line-beginning-position)
-                     (line-end-position)))
+      (edebug-x-read-breakpoint-at-line)
     (when (y-or-n-p (format "Edebug breakpoints: delete breakpoint %s?" func-name))
       (save-excursion
         (edebug-x-visit-breakpoint)
-        (edebug-x-modify-breakpoint-wrapper)))
-    (switch-to-prev-buffer)
+        (edebug-x-modify-breakpoint-wrapper nil)
+        (bury-buffer)))
     (revert-buffer)))
 
 (defun edebug-x-list-breakpoints ()
@@ -198,7 +202,7 @@ edebug-breakpoint-list-mode."
   (setq tabulated-list-format
         [("Function name" 50 nil)
          ("Position" 20 nil)
-         ("Condition" 20 nil)
+         ("Condition" 50 nil)
          ("Temporary" 20 nil)])
   (define-key edebug-x-breakpoint-list-mode-map (kbd "RET") 'edebug-x-visit-breakpoint)
   (define-key edebug-x-breakpoint-list-mode-map (kbd "K") 'edebug-x-kill-breakpoint)
