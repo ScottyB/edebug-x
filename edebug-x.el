@@ -249,9 +249,11 @@ for each."
   (let ((buff-breakpoints (get-buffer-create "*Edebug Breakpoints*"))
         (buff-instrumented (get-buffer-create "*Instrumented Functions*")))
     (with-current-buffer buff-breakpoints
-      (edebug-x-breakpoint-list-mode))
+      (edebug-x-breakpoint-list-mode)
+      (tabulated-list-print))
     (with-current-buffer buff-instrumented
-      (edebug-x-instrumented-function-list-mode))
+      (edebug-x-instrumented-function-list-mode)
+      (tabulated-list-print))
     (switch-to-buffer buff-breakpoints)
     (set-window-buffer (split-window-vertically)
                        buff-instrumented)))
@@ -260,13 +262,15 @@ for each."
   "Display breakpoints in a tabulated list buffer."
   (interactive)
   (switch-to-buffer (get-buffer-create "*Edebug Breakpoints*"))
-  (edebug-x-breakpoint-list-mode))
+  (edebug-x-breakpoint-list-mode)
+  (tabulated-list-print))
 
 (defun edebug-x-show-instrumented ()
   "Display instrumented functions in a tabluated list buffer."
   (interactive)
   (switch-to-buffer (get-buffer-create "*Instrumented Functions*"))
-  (edebug-x-instrumented-function-list-mode))
+  (edebug-x-instrumented-function-list-mode)
+  (tabulated-list-print))
 
 (define-key emacs-lisp-mode-map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
 (define-key emacs-lisp-mode-map (kbd "C-c C-x s") 'edebug-x-show-data)
