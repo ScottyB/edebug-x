@@ -25,7 +25,9 @@
 ;; Breakpoints can now be toggled from an Elisp buffer without first
 ;; running Edebug with `edebug-x-modify-breakpoint-wrapper', bound to
 ;; `C-x SPC'. If the function isn't instrumented already then it will
-;; instrument it and then set the breakpoint.
+;; instrument it and then set the breakpoint. Conditional breakpoints
+;; can also be set by calling the previous command with a prefix
+;; argument.
 
 ;; The list of current break points can be viewed with
 ;; `edebug-x-show-breakpoints', bound to `C-c C-x b'. From the
@@ -105,11 +107,12 @@
     (unless (markerp data)
       data)))
 
-(defun edebug-x-modify-breakpoint-wrapper ()
+(defun edebug-x-modify-breakpoint-wrapper (arg)
   "Set a breakpoint from an Elisp file.
 The current function that pointer is in will be instrumented if
-not already."
-  (interactive)
+not already. When called with a prefix argument a conditional
+breakpoint is set."
+  (interactive "P")
   (save-excursion
     (beginning-of-line)
     (let* ((func-symbol (intern (which-function)))
@@ -122,7 +125,10 @@ not already."
       (if (= (length breakpoints) (length removed))
           (progn
             (edebug-x-highlight-line)
-            (edebug-modify-breakpoint t))
+            (if (not arg)
+                (edebug-modify-breakpoint t)
+              (setq current-prefix-arg nil)
+              (call-interactively 'edebug-set-conditional-breakpoint)))
         (edebug-x-remove-highlight)
         (edebug-modify-breakpoint nil)))))
 
