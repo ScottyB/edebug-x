@@ -79,6 +79,25 @@
         (remove-overlays (overlay-start overlay)
                          (overlay-end overlay) 'edebug-x-hi-lock-overlay t))))
 
+(defun edebug-x-highlight-all ()
+  "Highlight all instrumented functions and breakpoints in
+current file."
+  (-each instrumented-forms
+         (lambda (e)
+           (let ((symbol (intern (car e)))
+                 (pos (cdr e)))
+             (when (string= (buffer-file-name)(symbol-file symbol))
+               (save-excursion
+                 (goto-char pos)
+                 (edebug-x-highlight-line))
+               (destructuring-bind (marker breakpoints stop-points others)
+                   (get symbol 'edebug)
+                 (-each breakpoints
+                        (lambda (b)
+                          (save-excursion
+                            (goto-char (+ pos (aref stop-points (car b))))
+                            (edebug-x-highlight-line))))))))))
+
 (defadvice edebug-make-form-wrapper (after edebug-x-make-form-wrapper
                                            (cursor form-begin form-end
                                                    &optional speclist)
@@ -157,7 +176,8 @@ Values are read from the line at point."
   (destructuring-bind (func-name pos &optional condition temporary)
       (edebug-x-read-breakpoint-at-line)
     (find-function (intern func-name))
-    (goto-char (string-to-number pos))))
+    (goto-char (string-to-number pos)))
+  (edebug-x-check-all-functions))
 
 (defun edebug-x-clear-data ()
   "Delete the window setup after `edebug-show-data'."
@@ -234,7 +254,8 @@ This removes all breakpoints in this function."
   (let ((function-name (car (split-string (buffer-substring-no-properties
                                            (line-beginning-position)
                                            (line-end-position))))))
-    (find-function (intern function-name))))
+    (find-function (intern function-name))
+    (edebug-x-check-all-functions)))
 
 (defun edebug-x-list-instrumented-functions ()
   "Return the list of instrumented functions.
