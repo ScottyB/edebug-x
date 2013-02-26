@@ -60,8 +60,16 @@
     (t (:background "wheat")))
   "Face for Edebug breakpoints.")
 
+(defface hi-edebug-x-debug-line
+  '((((background dark)) (:background "light green" :foreground "black"))
+    (t (:background "light green")))
+  "Face for current-line while debugging.")
+
 (defvar instrumented-forms '()
   "Stores all instrumented forms. Format is (symbol name . buffer position).")
+
+(defvar edebug-x-stop-point-overlay nil
+  "Overlay that highlights the current line while debugging.")
 
 (defun edebug-x-highlight-line ()
   "Create an overlay at line."
@@ -97,6 +105,27 @@ current file."
                           (save-excursion
                             (goto-char (+ pos (aref stop-points (car b))))
                             (edebug-x-highlight-line))))))))))
+
+(defadvice edebug-overlay-arrow (after edebug-x-highlight-debug-line activate)
+  "Highlight the current line while debugging."
+  (let ((start (line-beginning-position))
+        (end (line-end-position))
+        overlay)
+    (if edebug-x-stop-point-overlay
+        (move-overlay edebug-x-stop-point-overlay start end)
+      (setq overlay (make-overlay start end))
+      (overlay-put overlay 'edebug-x-debug t)
+      (overlay-put overlay 'face 'hi-edebug-x-debug-line)
+      (setq edebug-x-stop-point-overlay overlay))))
+
+(defadvice switch-to-buffer (after edebug-x-switch-to-buffer
+                                   (buffer-or-name &optional norecord force-same-window)
+                                   activate)
+  "A hacky way to remove Edebug-x's current line highlighting.
+Have yet to find a nice way to do this that works with Edebug Go
+mode."
+  (if (string= major-mode "emacs-lisp-mode")
+      (remove-overlays (point-min) (point-max) 'edebug-x-debug t)))
 
 (defadvice edebug-make-form-wrapper (after edebug-x-make-form-wrapper
                                            (cursor form-begin form-end
