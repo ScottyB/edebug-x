@@ -215,10 +215,12 @@ edebug-breakpoint-list-mode."
                       (list form
                             (vconcat `(,func-name)
                                      (list (number-to-string (+ pos (aref stop-points (car i)))))
-                                     (mapcar (lambda (ele) (if ele (with-temp-buffer
-                                                                (princ ele (current-buffer))
-                                                                (buffer-string))
-                                                        "")) (cdr i)))))))))
+                                     (mapcar (lambda (ele) (if ele
+                                                          (with-temp-buffer
+                                                            (princ ele (current-buffer))
+                                                            (buffer-string))
+                                                        ""))
+                                             (cdr i)))))))))
     results))
 
 (define-derived-mode
