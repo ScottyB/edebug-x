@@ -121,7 +121,7 @@ current file."
 
 (defun instrumentedp (fun-symbol)
   (unless (functionp fun-symbol)
-    (error "FUN-SYMBOL is not a function"))
+    (error "Not a function or function hasn't been evaluated yet."))
   (let ((data (get fun-symbol 'edebug)))
     (unless (markerp data)
       data)))
