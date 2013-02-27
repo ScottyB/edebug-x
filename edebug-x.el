@@ -233,7 +233,8 @@ edebug-breakpoint-list-mode."
   (let ((results))
     (-each instrumented-forms
            (lambda (form)
-             (let* ((edebug-data (get (intern (car form)) 'edebug))
+             (let* ((func-sym (intern (car form)))
+                    (edebug-data (get func-sym 'edebug))
                     (pos (cdr form))
                     (func-name (car form))
                     (breakpoints (car (cdr edebug-data)))
@@ -249,7 +250,8 @@ edebug-breakpoint-list-mode."
                                                             (princ ele (current-buffer))
                                                             (buffer-string))
                                                         ""))
-                                             (cdr i)))))))))
+                                             (cdr i))
+                                     `(,(file-name-nondirectory (symbol-file func-sym))))))))))
     results))
 
 (define-derived-mode
@@ -260,7 +262,8 @@ edebug-breakpoint-list-mode."
         [("Function name" 50 nil)
          ("Position" 20 nil)
          ("Condition" 50 nil)
-         ("Temporary" 20 nil)])
+         ("Temporary" 20 nil)
+         ("File name" 20 nil)])
   (define-key edebug-x-breakpoint-list-mode-map (kbd "RET") 'edebug-x-visit-breakpoint)
   (define-key edebug-x-breakpoint-list-mode-map (kbd "K") 'edebug-x-kill-breakpoint)
   (define-key edebug-x-breakpoint-list-mode-map (kbd "Q") 'edebug-x-clear-data)
@@ -291,14 +294,17 @@ This removes all breakpoints in this function."
 (defun edebug-x-list-instrumented-functions ()
   "Return the list of instrumented functions.
 Tabulated buffer ready."
-  (-map (lambda (item) (list (car item) (vector (car item)))) instrumented-forms))
+  (-map (lambda (item) (let ((str (car item)))
+                    (list str (vector str (symbol-file (intern str))))))
+        instrumented-forms))
 
 (define-derived-mode
   edebug-x-instrumented-function-list-mode tabulated-list-mode "Edebug Instrumented functions"
   "Major mode for listing instrumented functions"
   (setq tabulated-list-entries 'edebug-x-list-instrumented-functions)
   (setq tabulated-list-format
-        [("Instrumented Functions" 50 nil)])
+        [("Instrumented Functions" 50 nil)
+         ("File" 150 nil)])
   (define-key edebug-x-instrumented-function-list-mode-map (kbd "E") 'edebug-x-evaluate-function)
   (define-key edebug-x-instrumented-function-list-mode-map (kbd "Q") 'edebug-x-clear-data)
   (define-key edebug-x-instrumented-function-list-mode-map (kbd "RET") 'edebug-x-find-function)
