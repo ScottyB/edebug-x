@@ -206,7 +206,7 @@ Values are read from the line at point."
       (edebug-x-read-breakpoint-at-line)
     (find-function (intern func-name))
     (goto-char (string-to-number pos)))
-  (edebug-x-check-all-functions))
+  (edebug-x-highlight-all))
 
 (defun edebug-x-clear-data ()
   "Delete the window setup after `edebug-show-data'."
@@ -286,7 +286,7 @@ This removes all breakpoints in this function."
                                            (line-beginning-position)
                                            (line-end-position))))))
     (find-function (intern function-name))
-    (edebug-x-check-all-functions)))
+    (edebug-x-highlight-all)))
 
 (defun edebug-x-list-instrumented-functions ()
   "Return the list of instrumented functions.
