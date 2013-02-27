@@ -118,12 +118,10 @@ current file."
       (overlay-put overlay 'face 'hi-edebug-x-debug-line)
       (setq edebug-x-stop-point-overlay overlay))))
 
-(defadvice switch-to-buffer (after edebug-x-switch-to-buffer
-                                   (buffer-or-name &optional norecord force-same-window)
-                                   activate)
-  "A hacky way to remove Edebug-x's current line highlighting.
-Have yet to find a nice way to do this that works with Edebug Go
-mode."
+(defadvice edebug-set-windows (before edebug-x-edebug-set-windows
+                                (count &optional all-frames)
+                                activate)
+  "Remove Edebug-x's current line highlighting."
   (if (string= major-mode "emacs-lisp-mode")
       (remove-overlays (point-min) (point-max) 'edebug-x-debug t)))
 
