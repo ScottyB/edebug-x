@@ -2,8 +2,10 @@
 
 ;; Copyright (C) 2013  Scott Barnett
 
-;; Author: Scott Barnett
+;; Author: Scott Barnett <scott.n.barnett@gmail.com>
 ;; Keywords: extensions
+;; Package-Requires: ((dash "1.1.0"))
+;; Version: 0.8
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
