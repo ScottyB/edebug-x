@@ -168,18 +168,20 @@ breakpoint is set."
            (edebug-data (get func-symbol 'edebug))
            (breakpoints (and (not (markerp edebug-data)) (car (cdr edebug-data))))
            (removed (-remove (lambda (elt) (= (cdr (edebug-find-stop-point)) (car elt)))
-                             breakpoints)))
+                             breakpoints))
+           (new-breakpoint (= (length breakpoints) (length removed))))
       (if (not (instrumentedp func-symbol))
           (edebug-eval-top-level-form))
-      (if (= (length breakpoints) (length removed))
-          (progn
-            (edebug-x-highlight-line)
-            (if (not arg)
-                (edebug-modify-breakpoint t)
-              (setq current-prefix-arg nil)
-              (call-interactively 'edebug-set-conditional-breakpoint)))
-        (edebug-x-remove-highlight)
-        (edebug-modify-breakpoint nil)))))
+      (save-excursion
+        (goto-char
+         (if new-breakpoint
+             (progn
+               (if (not arg)
+                   (edebug-modify-breakpoint t)
+                 (setq current-prefix-arg nil)
+                 (call-interactively 'edebug-set-conditional-breakpoint)))
+           (edebug-modify-breakpoint nil)))
+        (if new-breakpoint (edebug-x-highlight-line) (edebug-x-remove-highlight))))))
 
 (defadvice edebug-set-breakpoint (before edebug-x-set-breakpoint-highlight
                                          (arg)
@@ -297,7 +299,7 @@ This removes all breakpoints in this function."
   "Return the list of instrumented functions.
 Tabulated buffer ready."
   (-map (lambda (item) (let ((str (car item)))
-                    (list str (vector str (symbol-file (intern str))))))
+                         (list str (vector str (symbol-file (intern str))))))
         instrumented-forms))
 
 (define-derived-mode
