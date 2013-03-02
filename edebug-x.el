@@ -121,8 +121,8 @@ current file."
       (setq edebug-x-stop-point-overlay overlay))))
 
 (defadvice edebug-set-windows (before edebug-x-edebug-set-windows
-                                (count &optional all-frames)
-                                activate)
+                                      (count &optional all-frames)
+                                      activate)
   "Remove Edebug-x's current line highlighting."
   (if (string= major-mode "emacs-lisp-mode")
       (remove-overlays (point-min) (point-max) 'edebug-x-debug t)))
@@ -155,6 +155,7 @@ current file."
     (unless (markerp data)
       data)))
 
+;;;###autoload
 (defun edebug-x-modify-breakpoint-wrapper (arg)
   "Set a breakpoint from an Elisp file.
 The current function that pointer is in will be instrumented if
@@ -269,6 +270,7 @@ edebug-breakpoint-list-mode."
   (define-key edebug-x-breakpoint-list-mode-map (kbd "Q") 'edebug-x-clear-data)
   (tabulated-list-init-header))
 
+;;;###autoload
 (defun edebug-x-evaluate-function ()
   "Evaluate function on line.
 This removes all breakpoints in this function."
@@ -310,6 +312,7 @@ Tabulated buffer ready."
   (define-key edebug-x-instrumented-function-list-mode-map (kbd "RET") 'edebug-x-find-function)
   (tabulated-list-init-header))
 
+;;;###autoload
 (defun edebug-x-show-data ()
   "Display instrumented functions and edebug breakpoints.
 Frame is split into two vertically showing the tabluated buffers
@@ -328,6 +331,7 @@ for each."
     (set-window-buffer (split-window-vertically)
                        buff-instrumented)))
 
+;;;###autoload
 (defun edebug-x-show-breakpoints ()
   "Display breakpoints in a tabulated list buffer."
   (interactive)
@@ -335,6 +339,7 @@ for each."
   (edebug-x-breakpoint-list-mode)
   (tabulated-list-print))
 
+;;;###autoload
 (defun edebug-x-show-instrumented ()
   "Display instrumented functions in a tabluated list buffer."
   (interactive)
