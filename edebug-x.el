@@ -108,6 +108,10 @@ current file."
                             (goto-char (+ pos (aref stop-points (car b))))
                             (edebug-x-highlight-line))))))))))
 
+(defun edebug-x-remove-debug-line ()
+  "Remove the overlay showing line that the debugger is at."
+  (remove-overlays (point-min) (point-max) 'edebug-x-debug t))
+
 (defadvice edebug-overlay-arrow (after edebug-x-highlight-debug-line activate)
   "Highlight the current line while debugging."
   (let ((start (line-beginning-position))
@@ -125,7 +129,7 @@ current file."
                                       activate)
   "Remove Edebug-x's current line highlighting."
   (if (string= major-mode "emacs-lisp-mode")
-      (remove-overlays (point-min) (point-max) 'edebug-x-debug t)))
+      (edebug-x-remove-debug-line)))
 
 (defadvice edebug-make-form-wrapper (after edebug-x-make-form-wrapper
                                            (cursor form-begin form-end
@@ -146,7 +150,8 @@ current file."
           (-remove (lambda (elemt) (equal (car elemt) func)) instrumented-forms))
     (save-excursion
       (remove-overlays (point)
-                       (progn (forward-sexp 1) (point)) 'edebug-x-hi-lock-overlay t))))
+                       (progn (forward-sexp 1) (point)) 'edebug-x-hi-lock-overlay t)
+      (edebug-x-remove-debug-line))))
 
 (defun instrumentedp (fun-symbol)
   (unless (functionp fun-symbol)
@@ -193,6 +198,10 @@ breakpoint is set."
                                            activate)
   "Remove highlights from the current line."
   (edebug-x-remove-highlight))
+
+(defadvice top-level (before edebug-x-top-level activate)
+  "Remove current line highlight when finished debugging."
+  (edebug-x-remove-debug-line))
 
 (defun edebug-x-read-breakpoint-at-line ()
   "Return a list of values read from the breakpoints buffer.
