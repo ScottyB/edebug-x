@@ -1,11 +1,12 @@
-;;; edebug-x.el --- extensions for Edebug
+;;; edebug-x.el --- Extensions for Edebug
 
 ;; Copyright (C) 2013  Scott Barnett
 
 ;; Author: Scott Barnett <scott.n.barnett@gmail.com>
+;; URL: https://github.com/ScottyB/edebug-x
 ;; Keywords: extensions
 ;; Package-Requires: ((dash "1.1.0"))
-;; Version: 0.8
+;; Version: 1.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
