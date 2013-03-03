@@ -1,9 +1,11 @@
 # Edebug-X -- Extensions for Edebug
 
-Extension to Edebug to make it a little nicer to work with.
+Extensions to Edebug to make it a little nicer to work with. Provides highlighting for breakpoints, instrumented functions
+and current line of debugger. Also provides a couple of commands to list current breakpoints and instrumented functions.
 
-Currently this is a **WIP** but please feel free to test it out and provide some feedback. This package provides the following
-functions:
+![Edebug-x highlights](https://raw.github.com/ScottyB/edebug-x/master/images/edebug-highlights.png)
+
+This package provides the following functions:
 ```
 edebug-x-modify-breakpoint-wrapper     - toggle breakpoints in Elisp buffer, C-x SPC
                                          When called with a prefix argument a conditional breakpoint is set
