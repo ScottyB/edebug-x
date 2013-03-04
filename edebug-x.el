@@ -6,7 +6,7 @@
 ;; URL: https://github.com/ScottyB/edebug-x
 ;; Keywords: extensions
 ;; Package-Requires: ((dash "1.1.0"))
-;; Version: 1.1
+;; Version: 1.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -58,15 +58,22 @@
 (require 'dash)
 (require 'cl)
 
+(defgroup edebug-x nil
+  "Extensions to Edebug"
+  :group 'Lisp
+  :prefix "edebug-x")
+
 (defface hi-edebug-x-stop
   '((((background dark)) (:background "plum1" :foreground "black"))
     (t (:background "wheat")))
-  "Face for Edebug breakpoints.")
+  "Face for Edebug breakpoints."
+  :group 'edebug-x)
 
 (defface hi-edebug-x-debug-line
   '((((background dark)) (:background "light green" :foreground "black"))
     (t (:background "light green")))
-  "Face for current-line while debugging.")
+  "Face for current-line while debugging."
+  :group 'edebug-x)
 
 (defvar instrumented-forms '()
   "Stores all instrumented forms. Format is (symbol name . buffer position).")
