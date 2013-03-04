@@ -369,11 +369,18 @@ for each."
 (defalias 'list-edebug-x-breakpoints 'edebug-x-show-breakpoints)
 (defalias 'list-edebug-x-instrumented 'edebug-x-show-instrumented)
 
-(eval-when-compile
-  (define-key emacs-lisp-mode-map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-x s") 'edebug-x-show-data)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-x b") 'edebug-x-show-breakpoints)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-x i") 'edebug-x-show-instrumented))
+;;;###autoload
+(define-minor-mode edebug-x-mode
+  "A minor mode that makes it easier to use Edebug"
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
+            (define-key map (kbd "C-c C-x s") 'edebug-x-show-data)
+            (define-key map (kbd "C-c C-x b") 'edebug-x-show-breakpoints)
+            (define-key map (kbd "C-c C-x i") 'edebug-x-show-instrumented)
+            map))
+
+;;;###autoload
+(add-hook 'emacs-lisp-mode-hook 'edebug-x-mode)
 
 (provide 'edebug-x)
 
