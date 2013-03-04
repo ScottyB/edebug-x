@@ -6,7 +6,7 @@
 ;; URL: https://github.com/ScottyB/edebug-x
 ;; Keywords: extensions
 ;; Package-Requires: ((dash "1.1.0"))
-;; Version: 1.0
+;; Version: 1.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -362,10 +362,11 @@ for each."
 (defalias 'list-edebug-x-breakpoints 'edebug-x-show-breakpoints)
 (defalias 'list-edebug-x-instrumented 'edebug-x-show-instrumented)
 
-(define-key emacs-lisp-mode-map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
-(define-key emacs-lisp-mode-map (kbd "C-c C-x s") 'edebug-x-show-data)
-(define-key emacs-lisp-mode-map (kbd "C-c C-x b") 'edebug-x-show-breakpoints)
-(define-key emacs-lisp-mode-map (kbd "C-c C-x i") 'edebug-x-show-instrumented)
+(eval-when-compile
+  (define-key emacs-lisp-mode-map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-x s") 'edebug-x-show-data)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-x b") 'edebug-x-show-breakpoints)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-x i") 'edebug-x-show-instrumented))
 
 (provide 'edebug-x)
 
