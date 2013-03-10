@@ -55,6 +55,7 @@
 ;;; Code:
 
 (require 'which-func)
+(require 'edebug)
 (require 'dash)
 (require 'cl)
 
@@ -84,18 +85,17 @@
 (defun edebug-x-highlight-line ()
   "Create an overlay at line."
   (interactive)
-  (setq overlay (make-overlay (line-beginning-position) (line-end-position)))
-  (overlay-put overlay 'face 'hi-edebug-x-stop)
-  (overlay-put overlay 'edebug-x-hi-lock-overlay t))
+  (let ((overlay (make-overlay (line-beginning-position) (line-end-position))))
+    (overlay-put overlay 'face 'hi-edebug-x-stop)
+    (overlay-put overlay 'edebug-x-hi-lock-overlay t)))
 
 (defun edebug-x-remove-highlight ()
   "Remove overlay at point if present."
   (interactive)
-  (if (find-if (lambda (elt) (equal (car (overlay-properties elt)) 'edebug-x-hi-lock-overlay))
+  (when (find-if (lambda (elt) (equal (car (overlay-properties elt)) 'edebug-x-hi-lock-overlay))
                (overlays-at (point)))
-      (progn
-        (remove-overlays (overlay-start overlay)
-                         (overlay-end overlay) 'edebug-x-hi-lock-overlay t))))
+              (remove-overlays (line-beginning-position)
+                                 (line-end-position) 'edebug-x-hi-lock-overlay t)))
 
 (defun edebug-x-highlight-all ()
   "Highlight all instrumented functions and breakpoints in
