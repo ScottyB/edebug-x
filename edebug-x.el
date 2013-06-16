@@ -260,7 +260,7 @@ edebug-breakpoint-list-mode."
                (list form
                      (vconcat `(,func-name)
                               (list (number-to-string (+ pos (aref stop-points (car i)))))
-                              (mapcar (lambda (ele) (if ele
+                             (mapcar (lambda (ele) (if ele
                                                    (with-temp-buffer
                                                      (princ ele (current-buffer))
                                                      (buffer-string))
@@ -279,10 +279,15 @@ edebug-breakpoint-list-mode."
          ("Condition" 50 nil)
          ("Temporary" 20 nil)
          ("File name" 20 nil)])
-  (define-key edebug-x-breakpoint-list-mode-map (kbd "RET") 'edebug-x-visit-breakpoint)
-  (define-key edebug-x-breakpoint-list-mode-map (kbd "K") 'edebug-x-kill-breakpoint)
-  (define-key edebug-x-breakpoint-list-mode-map (kbd "Q") 'edebug-x-clear-data)
   (tabulated-list-init-header))
+
+(defvar edebug-x-breakpoint-list-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET") 'edebug-x-visit-breakpoint)
+    (define-key map (kbd "K") 'edebug-x-kill-breakpoint)
+    (define-key map (kbd "Q") 'edebug-x-clear-data)
+    map)
+  "Keymap used in `edebug-x-breakpoint-list-mode' buffers.")
 
 ;;;###autoload
 (defun edebug-x-evaluate-function ()
@@ -321,10 +326,15 @@ Tabulated buffer ready."
   (setq tabulated-list-format
         [("Instrumented Functions" 50 nil)
          ("File" 150 nil)])
-  (define-key edebug-x-instrumented-function-list-mode-map (kbd "E") 'edebug-x-evaluate-function)
-  (define-key edebug-x-instrumented-function-list-mode-map (kbd "Q") 'edebug-x-clear-data)
-  (define-key edebug-x-instrumented-function-list-mode-map (kbd "RET") 'edebug-x-find-function)
   (tabulated-list-init-header))
+
+(defvar edebug-x-instrumented-function-list-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "E") 'edebug-x-evaluate-function)
+    (define-key map (kbd "Q") 'edebug-x-clear-data)
+    (define-key map (kbd "RET") 'edebug-x-find-function)
+    map)
+  "Keymap for `edebug-x-instrumented-function-list-mode' buffers.")
 
 ;;;###autoload
 (defun edebug-x-show-data ()
