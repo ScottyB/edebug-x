@@ -98,21 +98,19 @@
 (defun edebug-x-highlight-all ()
   "Highlight all instrumented functions and breakpoints in
 current file."
-  (mapc (lambda (e)
-          (let ((symbol (intern (car e)))
-                (pos (cdr e)))
-            (when (string= (buffer-file-name)(symbol-file symbol))
-              (save-excursion
-                (goto-char pos)
-                (edebug-x-highlight-line))
-              (cl-destructuring-bind (marker breakpoints stop-points others)
-                  (get symbol 'edebug)
-                (mapc (lambda (b)
-                        (save-excursion
-                          (goto-char (+ pos (aref stop-points (car b))))
-                          (edebug-x-highlight-line)))
-                      breakpoints)))))
-        instrumented-forms))
+  (dolist (e instrumented-forms)
+    (let ((symbol (intern (car e)))
+          (pos (cdr e)))
+      (when (string= (buffer-file-name)(symbol-file symbol))
+        (save-excursion
+          (goto-char pos)
+          (edebug-x-highlight-line))
+        (cl-destructuring-bind (marker breakpoints stop-points others)
+            (get symbol 'edebug)
+          (dolist (b breakpoints)
+            (save-excursion
+              (goto-char (+ pos (aref stop-points (car b))))
+              (edebug-x-highlight-line))))))))
 
 (defun edebug-x-remove-debug-line ()
   "Remove the overlay showing line that the debugger is at."
@@ -179,7 +177,7 @@ breakpoint is set."
            (edebug-data (get func-symbol 'edebug))
            (breakpoints (and (not (markerp edebug-data)) (car (cdr edebug-data))))
            (removed (cl-remove-if (lambda (elt) (= (cdr (edebug-find-stop-point)) (car elt)))
-                             breakpoints))
+                                  breakpoints))
            (new-breakpoint (= (length breakpoints) (length removed))))
       (if (not (instrumentedp func-symbol))
           (edebug-eval-top-level-form))
@@ -213,9 +211,9 @@ breakpoint is set."
   "Return a list of values read from the breakpoints buffer.
 Values are read from the line at point."
   (cl-remove-if (lambda (str) (string= str ""))
-           (split-string (buffer-substring-no-properties
-                          (line-beginning-position)
-                          (line-end-position)) "  ")))
+                (split-string (buffer-substring-no-properties
+                               (line-beginning-position)
+                               (line-end-position)) "  ")))
 
 (defun edebug-x-visit-breakpoint ()
   "Navigate to breakpoint at line."
@@ -249,27 +247,26 @@ Values are read from the line at point."
 Returns a tablulated list friendly result to be displayed in
 edebug-breakpoint-list-mode."
   (let ((results))
-    (mapc (lambda (form)
-            (let* ((func-sym (intern (car form)))
-                   (edebug-data (get func-sym 'edebug))
-                   (pos (cdr form))
-                   (func-name (car form))
-                   (breakpoints (car (cdr edebug-data)))
-                   (stop-points (nth 2 edebug-data)))
-              (loop for i in breakpoints do
-                    (add-to-list
-                     'results
-                     (list form
-                           (vconcat `(,func-name)
-                                    (list (number-to-string (+ pos (aref stop-points (car i)))))
-                                    (mapcar (lambda (ele) (if ele
-                                                         (with-temp-buffer
-                                                           (princ ele (current-buffer))
-                                                           (buffer-string))
-                                                       ""))
-                                            (cdr i))
-                                    `(,(file-name-nondirectory (symbol-file func-sym)))))))))
-          instrumented-forms)
+    (dolist (form instrumented-forms)
+      (let* ((func-sym (intern (car form)))
+             (edebug-data (get func-sym 'edebug))
+             (pos (cdr form))
+             (func-name (car form))
+             (breakpoints (car (cdr edebug-data)))
+             (stop-points (nth 2 edebug-data)))
+        (loop for i in breakpoints do
+              (add-to-list
+               'results
+               (list form
+                     (vconcat `(,func-name)
+                              (list (number-to-string (+ pos (aref stop-points (car i)))))
+                              (mapcar (lambda (ele) (if ele
+                                                   (with-temp-buffer
+                                                     (princ ele (current-buffer))
+                                                     (buffer-string))
+                                                 ""))
+                                      (cdr i))
+                              `(,(file-name-nondirectory (symbol-file func-sym)))))))))
     results))
 
 (define-derived-mode
