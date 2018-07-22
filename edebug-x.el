@@ -378,7 +378,7 @@ for each."
 (define-minor-mode edebug-x-mode
   "A minor mode that makes it easier to use Edebug"
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "C-x SPC") 'edebug-x-modify-breakpoint-wrapper)
+            (define-key map (kbd "C-c C-x m") 'edebug-x-modify-breakpoint-wrapper)
             (define-key map (kbd "C-c C-x s") 'edebug-x-show-data)
             (define-key map (kbd "C-c C-x b") 'edebug-x-show-breakpoints)
             (define-key map (kbd "C-c C-x i") 'edebug-x-show-instrumented)
