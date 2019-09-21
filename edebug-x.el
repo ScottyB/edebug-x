@@ -254,19 +254,19 @@ edebug-breakpoint-list-mode."
              (func-name (car form))
              (breakpoints (car (cdr edebug-data)))
              (stop-points (nth 2 edebug-data)))
-        (loop for i in breakpoints do
-              (add-to-list
-               'results
-               (list form
-                     (vconcat `(,func-name)
-                              (list (number-to-string (+ pos (aref stop-points (car i)))))
-                             (mapcar (lambda (ele) (if ele
-                                                   (with-temp-buffer
-                                                     (princ ele (current-buffer))
-                                                     (buffer-string))
-                                                 ""))
-                                      (cdr i))
-                              `(,(file-name-nondirectory (symbol-file func-sym)))))))))
+        (dolist (i breakpoints)
+          (add-to-list
+           'results
+           (list form
+                 (vconcat `(,func-name)
+                          (list (number-to-string (+ pos (aref stop-points (car i)))))
+                          (mapcar (lambda (ele) (if ele
+                                                    (with-temp-buffer
+                                                      (princ ele (current-buffer))
+                                                      (buffer-string))
+                                                  ""))
+                                  (cdr i))
+                          `(,(file-name-nondirectory (symbol-file func-sym)))))))))
     results))
 
 (define-derived-mode
